@@ -1,4 +1,3 @@
-import data
 import graphene
 
 
@@ -14,12 +13,11 @@ class ShipInput(graphene.InputObjectType):
     captain = graphene.String(required=True)
 
 
-class CreateKongouType(graphene.Mutation):
+class CreateShip(graphene.Mutation):
     class Arguments:
         ship_data = ShipInput(required=True)
 
-    ok = graphene.Boolean()
-    ship = graphene.Field(lambda: Ship)
+    Output = Ship
 
     @staticmethod
     def mutate(self, info, ship_data=None):
@@ -28,13 +26,11 @@ class CreateKongouType(graphene.Mutation):
             completion=ship_data.completion,
             captain=ship_data.captain
         )
-        ok = True
-        data.kanmusu['kongou_type'].append(ship.__dict__)
-        return CreateKongouType(ok=ok, ship=ship)
+        return ship
 
 
 class MyMutations(graphene.ObjectType):
-    create_kongou_type = CreateKongouType.Field()
+    create_ship = CreateShip.Field()
 
 
 class Query(graphene.ObjectType):
@@ -45,19 +41,15 @@ schema = graphene.Schema(query=Query, mutation=MyMutations)
 
 query = '''
     mutation myMutations {
-        createKongouType(shipData:{name:"kongoumk2",completion:"2019/01/31",captain:"nasum"}) {
-            ship {
-                name
-                completion
-                captain
-            }
-            ok
+        createShip(shipData:{name:"kongoumk2",completion:"2019/01/31",captain:"nasum"}) {
+            name
+            completion
+            captain
+            __typename
         }
     }
 '''
 
 if __name__ == '__main__':
-    print(data.kanmusu['kongou_type'])
     result = schema.execute(query)
-    print(result.data['createKongouType'])
-    print(data.kanmusu['kongou_type'])
+    print(result.data['createShip'])
