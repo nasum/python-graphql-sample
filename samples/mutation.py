@@ -37,7 +37,7 @@ class Query(graphene.ObjectType):
     ship = graphene.Field(Ship)
 
 
-schema = graphene.Schema(query=Query, mutation=MyMutations)
+schema = graphene.Schema(mutation=MyMutations)
 
 query = '''
     mutation myMutations {
